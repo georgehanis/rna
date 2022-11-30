@@ -32,11 +32,12 @@ class CTypesPairAlign(BasePairAlign):
     Implementations should be done in C code, exporting the following symbol:
 
     ```c
-    void pairalign(char* sequence, int i, int j, int left_loop_size, int dd_size,
-                   void (*cb)(char*, int, int));
+    void pairalign(char *sequence, int i, int j, int left_left_loop_size,
+                   int left_right_loop_size, int right_left_loop_size, int dd_size,
+                   void (*cb)(char *, int, int, int)) {
     ```
 
-    The implementation is done in C code in pairalign/cpairalign.c
+    The implementation is done in C code in pairalign/cpairalign_ltype.c
 
     For usage, refer to the unit tests in test/test_pairalign.py
     """
@@ -47,14 +48,32 @@ class CTypesPairAlign(BasePairAlign):
         self.lib = ctypes.CDLL(library_path)
 
     def pairalign(
-        self, sequence: str, i: int, j: int, left_left_loop_size: int, left_right_loop_size:int, right_left_loop_size:int, dd_size: int
+        self,
+        sequence: str,
+        i: int,
+        j: int,
+        left_left_loop_size: int,
+        left_right_loop_size: int,
+        right_left_loop_size: int,
+        dd_size: int,
     ) -> str:
         results = []
 
-        def add_result(dot_bracket, left_loop_stems, middle_loop_stems,right_loop_stems):
-            results.append((dot_bracket.decode(), left_loop_stems, middle_loop_stems,right_loop_stems))
+        def add_result(
+            dot_bracket, left_loop_stems, middle_loop_stems, right_loop_stems
+        ):
+            results.append(
+                (
+                    dot_bracket.decode(),
+                    left_loop_stems,
+                    middle_loop_stems,
+                    right_loop_stems,
+                )
+            )
 
-        FUNCTYPE = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int, ctypes.c_int,ctypes.c_int)
+        FUNCTYPE = ctypes.CFUNCTYPE(
+            None, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int
+        )
 
         self.lib.pairalign(
             ctypes.c_char_p(sequence.lower().encode()),
@@ -68,3 +87,4 @@ class CTypesPairAlign(BasePairAlign):
         )
 
         return results
+
