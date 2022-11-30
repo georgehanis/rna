@@ -39,8 +39,8 @@
   l -> right index of last stem in left loop
   r -> right index of last stem in right loop
 */
-void skip_final_au(char *sequence, char *dot_bracket, int left_loop_stems,int middle_loop_stems,
-                   int right_loop_stems, void (*cb)(char *, int, int,int)) {
+void skip_final_au(char *sequence, char *dot_bracket, int left_loop_stems,
+                   int right_loop_stems, void (*cb)(char *, int, int)) {
   int L = -1, l = -1, R = -1, r = -1;
 
   char *bracket = strdup(dot_bracket);
@@ -64,20 +64,21 @@ void skip_final_au(char *sequence, char *dot_bracket, int left_loop_stems,int mi
 
   if (left_is_au) {
     bracket[L] = bracket[l] = '.';
-    cb(bracket, left_loop_stems - 1, middle_loop_stems,right_loop_stems);
+    cb(bracket, left_loop_stems - 1, right_loop_stems);
     bracket[L] = '(';
     bracket[l] = ')';
   }
   if (right_is_au) {
     bracket[R] = bracket[r] = '.';
-    cb(bracket, left_loop_stems, middle_loop_stems,right_loop_stems - 1);
+    cb(bracket, left_loop_stems, right_loop_stems - 1);
     bracket[R] = '[';
     bracket[r] = ']';
   }
   if (left_is_au && right_is_au) {
     bracket[L] = bracket[l] = bracket[R] = bracket[r] = '.';
-    cb(bracket, left_loop_stems - 1, middle_loop_stems,right_loop_stems - 1);
+    cb(bracket, left_loop_stems - 1, right_loop_stems - 1);
   }
 
   free(bracket);
 }
+
