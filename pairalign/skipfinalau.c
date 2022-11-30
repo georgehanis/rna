@@ -62,24 +62,21 @@ void skip_final_au(char *sequence, char *dot_bracket, int left_loop_stems,
   int left_is_au = left_loop_stems > 0 && IS_AU(sequence[L], sequence[l]);
   int right_is_au = right_loop_stems > 0 && IS_AU(sequence[R], sequence[r]);
 
-  if (left_is_au && right_is_au) {
-    bracket[L] = bracket[l] = bracket[R] = bracket[r] = '.';
-    cb(bracket, left_loop_stems - 1, right_loop_stems - 1);
-  }
-  else if (left_is_au) {
+  if (left_is_au) {
     bracket[L] = bracket[l] = '.';
     cb(bracket, left_loop_stems - 1, right_loop_stems);
     bracket[L] = '(';
     bracket[l] = ')';
   }
-  else if (right_is_au) {
+  if (right_is_au) {
     bracket[R] = bracket[r] = '.';
     cb(bracket, left_loop_stems, right_loop_stems - 1);
     bracket[R] = '[';
     bracket[r] = ']';
   }
-  else {
-    cb(bracket,left_loop_stems,right_loop_stems);
+  if (left_is_au && right_is_au) {
+    bracket[L] = bracket[l] = bracket[R] = bracket[r] = '.';
+    cb(bracket, left_loop_stems - 1, right_loop_stems - 1);
   }
 
   free(bracket);
