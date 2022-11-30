@@ -75,7 +75,9 @@ struct size {
  *                Struct management:                                      *
  **************************************************************************/
 
-struct pseudoknot *create_pseudoknot(int left_left_loop_size, int left_right_loop_size, int right_left_loop_size,int dd_size) {
+struct pseudoknot *create_pseudoknot(int left_left_loop_size,
+                                     int left_right_loop_size,
+                                     int right_left_loop_size, int dd_size) {
   struct pseudoknot *ps =
       (struct pseudoknot *)malloc(sizeof(struct pseudoknot));
   ps->left_left_loop_size = left_left_loop_size;
@@ -384,7 +386,7 @@ struct size *traverse_parse_tree_for_dd(struct yaep_tree_node *node) {
  * Returns a list of all identified pesudoknots.
  **/
 struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
-  int left_left_loop_size,left_right_loop_size,right_left_loop_size;
+  int left_left_loop_size, left_right_loop_size, right_left_loop_size;
   struct size *dd_sizes;
   struct pseudoknot *pknots = NULL;
   struct pseudoknot *pseudoknots = NULL;
@@ -403,14 +405,19 @@ struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
       // This should never resolve ...
       return NULL;
     }
-    left_left_loop_size = traverse_parse_tree_for_loop(node->val.anode.children[0]);
-    left_right_loop_size  = traverse_parse_tree_for_loop(node->val.anode.children[1]);
+    left_left_loop_size =
+        traverse_parse_tree_for_loop(node->val.anode.children[0]);
+    left_right_loop_size =
+        traverse_parse_tree_for_loop(node->val.anode.children[1]);
     dd_sizes = traverse_parse_tree_for_dd(node->val.anode.children[2]);
-    right_left_loop_size = traverse_parse_tree_for_loop(node->val.anode.children[3]);
+    right_left_loop_size =
+        traverse_parse_tree_for_loop(node->val.anode.children[3]);
 
     while (dd_sizes != NULL) {
       pseudoknots = append_pseudoknot_if_not_exists(
-          pseudoknots, create_pseudoknot(left_left_loop_size, left_right_loop_size, right_left_loop_size,dd_sizes->value));
+          pseudoknots,
+          create_pseudoknot(left_left_loop_size, left_right_loop_size,
+                            right_left_loop_size, dd_sizes->value));
       dd_sizes = dd_sizes->next;
     }
     return pseudoknots;
@@ -433,7 +440,8 @@ struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
   }
 }
 
-void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int,int,int)) {
+void detect_pseudoknots(char *sequence,
+                        void (*cb)(int, int, int, int, int, int)) {
   s_input = sequence;
 
   int len = strlen(sequence);
@@ -460,7 +468,8 @@ void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int,int,int)) 
         if (i->dd_size < s_min_dd_size) {
           continue;
         }
-        cb(left, right - left + 1, i->left_left_loop_size, i->left_right_loop_size, i->right_left_loop_size,i->dd_size);
+        cb(left, right - left + 1, i->left_left_loop_size,
+           i->left_right_loop_size, i->right_left_loop_size, i->dd_size);
         // fprintf(fp, "%d,%d,%d,%d\n", left, right - left + 1,
         // i->left_loop_size, i->dd_size);
       }
