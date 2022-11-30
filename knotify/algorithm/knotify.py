@@ -31,7 +31,6 @@ from knotify.energy.vienna import ViennaEnergy
 from knotify import hairpin
 from knotify.pairalign.base import BasePairAlign
 from knotify.parsers.base import BaseParser
-from knotify.pairalign.cpairalign import CPairAlign
 from knotify.extensions.skip_final_au import SkipFinalAU
 
 
@@ -63,10 +62,30 @@ class Knotify(BaseAlgorithm):
 
         pseudoknots = []
         max_size = {p: 0 for p in pairalign}
-        for (i, j, left_left_loop_size, left_right_loop_size, right_left_loop_size,dd_size) in parser(sequence):
+        for (
+            i,
+            j,
+            left_left_loop_size,
+            left_right_loop_size,
+            right_left_loop_size,
+            dd_size,
+        ) in parser(sequence):
             for p in pairalign:
-                knots = p(sequence, i, j, left_left_loop_size, left_right_loop_size, right_left_loop_size,dd_size)
-                for (dot_bracket, left_loop_stems, middle_loop_stems,right_loop_stems) in knots:
+                knots = p(
+                    sequence,
+                    i,
+                    j,
+                    left_left_loop_size,
+                    left_right_loop_size,
+                    right_left_loop_size,
+                    dd_size,
+                )
+                for (
+                    dot_bracket,
+                    left_loop_stems,
+                    middle_loop_stems,
+                    right_loop_stems,
+                ) in knots:
                     size = left_loop_stems + right_loop_stems + middle_loop_stems
 
                     if not prune_early or size >= max_size[p] - max_stem_allow_smaller:
@@ -85,18 +104,18 @@ class Knotify(BaseAlgorithm):
                         continue
 
                     knots_without_au = skip_final_au(
-                        sequence, dot_bracket, left_loop_stems, middle_loop_stems,right_loop_stems
+                        sequence, dot_bracket, left_loop_stems, right_loop_stems
                     )
                     if knots_without_au:
                         pseudoknots.extend(
                             {
                                 "dot_bracket": d,
                                 "left_loop_stems": l,
-                                "middle_loop_stems": m,
+                                "middle_loop_stems": middle_loop_stems,
                                 "right_loop_stems": r,
                                 "dd": dd_size,
                             }
-                            for (d, l, m, r) in knots_without_au
+                            for (d, l, r) in knots_without_au
                         )
 
         if not pseudoknots:
@@ -104,6 +123,7 @@ class Knotify(BaseAlgorithm):
                 {
                     "dot_bracket": "." * len(sequence),
                     "left_loop_stems": 0,
+                    "middle_loop_stems": 0,
                     "right_loop_stems": 0,
                     "dd": 0,
                 }
@@ -141,3 +161,4 @@ class Knotify(BaseAlgorithm):
         )
 
         return data
+
