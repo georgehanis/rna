@@ -60,7 +60,8 @@ void initialize(char *_grammar_unused, int _allow_ug, int _min_dd_size,
   //        min_window_size, max_window_size);
 }
 
-void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int, int, int)) {
+void detect_pseudoknots(char *sequence,
+                        void (*cb)(int, int, int, int, int, int)) {
   int n = strlen(sequence);
 
   // window size is static or ratio of sequence length
@@ -128,7 +129,8 @@ void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int, int, int)
   }
 
   // printf("eftasa edo\n");
-  core_stem *all_cstems = malloc(n_stems * n_stems * n_stems * sizeof(core_stem)); // zong
+  core_stem *all_cstems =
+      malloc(n_stems * n_stems * n_stems * sizeof(core_stem)); // zong
   core_stem *ccs_position = all_cstems;
 
   cs_position = all_stems;
@@ -155,31 +157,29 @@ void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int, int, int)
     }
   }*/
 
-  for (int i=0; i<n_stems; i++) {
+  for (int i = 0; i < n_stems; i++) {
     cs_position = all_stems + i;
-    for (int j=i+1; j<n_stems; j++) {
-      cs_position2 = all_stems+j;
-      for (int k=j+1; k<n_stems; k++) {
+    for (int j = i + 1; j < n_stems; j++) {
+      cs_position2 = all_stems + j;
+      for (int k = j + 1; k < n_stems; k++) {
         cs_position3 = all_stems + k;
-        if ((cs_position->left<cs_position2->left) &&
-            (cs_position2->left<cs_position3->left) &&
+        if ((cs_position->left < cs_position2->left) &&
+            (cs_position2->left < cs_position3->left) &&
             (cs_position3->left < cs_position->right) &&
-            (cs_position->right<cs_position2->right)  &&
+            (cs_position->right < cs_position2->right) &&
             (cs_position2->right < cs_position3->right)) {
-              ccs_position->cstem[0].left = cs_position->left;
-              ccs_position->cstem[0].right = cs_position->right;
-              ccs_position->cstem[1].left = cs_position2->left;
-              ccs_position->cstem[1].right = cs_position2->right;
-              ccs_position->cstem[2].left = cs_position3->left;
-              ccs_position->cstem[2].right = cs_position3->right;
-              ccs_position++;
-              n_cstems++;
-            }
+          ccs_position->cstem[0].left = cs_position->left;
+          ccs_position->cstem[0].right = cs_position->right;
+          ccs_position->cstem[1].left = cs_position2->left;
+          ccs_position->cstem[1].right = cs_position2->right;
+          ccs_position->cstem[2].left = cs_position3->left;
+          ccs_position->cstem[2].right = cs_position3->right;
+          ccs_position++;
+          n_cstems++;
+        }
       }
     }
   }
-
-  
 
   // printf("Core_Stems (size: %ld): \n", n_cstems);
   ccs_position = all_cstems;
@@ -188,15 +188,18 @@ void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int, int, int)
     int size = (ccs_position->cstem[2]).right - ccs_position->cstem[0].left + 1;
     int left_left_loop_size =
         ccs_position->cstem[1].left - ccs_position->cstem[0].left - 1;
-    int left_right_loop_size =ccs_position->cstem[2].left-ccs_position->cstem[1].left-1;
-    int right_left_loop_size = ccs_position->cstem[1].right-ccs_position->cstem[0].right-1;
+    int left_right_loop_size =
+        ccs_position->cstem[2].left - ccs_position->cstem[1].left - 1;
+    int right_left_loop_size =
+        ccs_position->cstem[1].right - ccs_position->cstem[0].right - 1;
     int dd_size =
         ccs_position->cstem[0].right - ccs_position->cstem[2].left - 1;
 
     // TODO (akolaitis): improve this
     if (size < min_window_size || size > max_window_size ||
         dd_size < s_min_dd_size || dd_size > s_max_dd_size ||
-        left_left_loop_size == 0 || left_right_loop_size == 0 ||  right_left_loop_size  == 0  ||
+        left_left_loop_size == 0 || left_right_loop_size == 0 ||
+        right_left_loop_size == 0 ||
         (ccs_position->cstem[1].right == ccs_position->cstem[2].right - 1)) {
       // printf("RIP! %d,%d,%d,%d\n", left, size, left_loop_size, dd_size);
 
@@ -204,7 +207,8 @@ void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int, int, int)
       continue;
     }
 
-    cb(left, size, left_left_loop_size, left_right_loop_size, right_left_loop_size,dd_size);
+    cb(left, size, left_left_loop_size, left_right_loop_size,
+       right_left_loop_size, dd_size);
     // printf("(%d %d) - (%d %d) \t\t (%c, %c) - (%c, %c) \n",
     //        (ccs_position->cstem[0]).left, (ccs_position->cstem[0]).right,
     //        (ccs_position->cstem[1]).left, (ccs_position->cstem[1]).right,
