@@ -52,7 +52,6 @@ class SkipFinalAU:
         sequence: str,
         dot_bracket: str,
         left_loop_stems: int,
-        middle_loop_stems: int,
         right_loop_stems: int,
     ) -> list:
         """
@@ -62,23 +61,15 @@ class SkipFinalAU:
         """
         results = []
 
-        def add_result(dot_bracket, left_loop_stems, middle_loop_stems ,right_loop_stems):
-            results.append(
-                (
-                    dot_bracket.decode(),
-                    left_loop_stems,
-                    middle_loop_stems,
-                    right_loop_stems,
-                )
-            )
+        def add_result(dot_bracket, left_loop_stems, right_loop_stems):
+            results.append((dot_bracket.decode(), left_loop_stems, right_loop_stems))
 
-        FUNCTYPE = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int, ctypes.c_int,ctypes.c_int)
+        FUNCTYPE = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int, ctypes.c_int)
 
         self.lib.skip_final_au(
             ctypes.c_char_p(sequence.lower().encode()),
             ctypes.c_char_p(dot_bracket.encode()),
             ctypes.c_int(left_loop_stems),
-            ctypes.c_int(middle_loop_stems),
             ctypes.c_int(right_loop_stems),
             FUNCTYPE(add_result),
         )
