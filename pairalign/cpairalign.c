@@ -101,7 +101,7 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
     }
     dot_bracket[a] = '{';
     dot_bracket[b] = '}';
-    left_loop_stems++;
+    middle_loop_stems++;
   }
 
   // right loop stems
