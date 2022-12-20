@@ -58,7 +58,7 @@ def apply_free_energy_and_stems_criterion(
     # calculating energy for 2949 rows, finished after 0.2533254623413086 sec
 
     # max stems
-    data["stems"] = data["left_loop_stems"] + data["right_loop_stems"]
+    data["stems"] = data["left_loop_stems"] + data["right_loop_stems"] + data["middle_loop_stems"]
     data = data[
         data["stems"] >= data["stems"].max() - max_stem_allow_smaller
     ].reset_index()
