@@ -26,12 +26,15 @@ from enum import Enum
 
 class State(Enum):
     NONE = 0
-    LEFT_CORE = 1
-    RIGHT_CORE = 2
+    FIRST_LEFT_CORE = 1
+    SECOND_LEFT_CORE = 2
+    FIRST_RIGHT_CORE = 3
+    SECOND_RIGHT_CORE=4
 
 
 class Stem(Enum):
     RIGHT = "right"
+    MIDDLE = "middle"
     LEFT = "left"
 
 
@@ -40,8 +43,8 @@ class Dot2Pair:
     Parse dot bracket expressions and extract positions of stems
     """
 
-    SYMBOL_MAP = {"(": ")", "[": "]", ")": "(", "]": "["}
-    OPPOSITE_SYMBOL_MAP = {")": "]", "(": "[", "[": "(", "]": ")"}
+    SYMBOL_MAP = {"(": ")", "{": "}", "[":"]",")": "(", "}": "{","]":"["}
+    OPPOSITE_SYMBOL_MAP = {")": "}", "(": "{", "{": "[", "}": "]"}
 
     def __init__(self, dot_bracket: str):
         """A new parser set to parse the related dot bracket.
@@ -52,7 +55,7 @@ class Dot2Pair:
         # these flags are going to be set
         # whenever we have a match a pseudoknot lookup ...
         self.state = State.NONE
-        self.stack = {Stem.RIGHT: [], Stem.LEFT: []}
+        self.stack = {Stem.RIGHT: [], Stem.MIDDLE:[],Stem.LEFT: []}
 
         try:
             first_symbol = next(x for x in self.dot_bracket if x in self.SYMBOL_MAP)
@@ -60,15 +63,19 @@ class Dot2Pair:
             raise ValueError(f"{self.dot_bracket} has no stem symbols")
 
         self.left_open_symbol = first_symbol
-        self.right_open_symbol = self.OPPOSITE_SYMBOL_MAP[first_symbol]
+        self.middle_open_symbol = self.OPPOSITE_SYMBOL_MAP[first_symbol]
+        self.right_open_symbol = self.OPPOSITE_SYMBOL_MAP[self.middle_open_symbol]
         self.left_close_symbol = self.SYMBOL_MAP[self.left_open_symbol]
+        self.middle_close_symbol = self.SYMBOL_MAP[self.middle_open_symbol]
         self.right_close_symbol = self.SYMBOL_MAP[self.right_open_symbol]
 
         # result stack
         self._result = {
             "right_core_stems": [],
+            "middle_core_stems":[],
             "left_core_stems": [],
             "right_stems": [],
+            "middle_stems":[],
             "left_stems": [],
         }
 
@@ -88,20 +95,34 @@ class Dot2Pair:
 
         elif char == self.left_close_symbol:
             binding = self.stack[Stem.LEFT].pop()
-            is_core = self.state == State.LEFT_CORE
+            is_core = self.state == State.SECOND_LEFT_CORE
             if is_core:
-                self.state = State.RIGHT_CORE
+                self.state = State.FIRST_RIGHT_CORE
 
             self.__add_pair(Stem.LEFT, (binding, position), is_core)
 
+        elif char == self.middle_open_symbol:
+            self.stack[Stem.MIDDLE].append(position)
+            if self.state == State.NONE:
+                self.state=State.FIRST_LEFT_CORE
+
+        elif char == self.middle_close_symbol:
+            binding = self.stack[Stem.MIDDLE].pop()
+            is_core = self.state == State.FIRST_RIGHT_CORE
+            if is_core:
+                self.state = State.SECOND_RIGHT_CORE
+            
+            self.__add_pair(Stem.MIDDLE, (binding,position), is_core)
+
+
         elif char == self.right_open_symbol:
             self.stack[Stem.RIGHT].append(position)
-            if self.state == State.NONE:
-                self.state = State.LEFT_CORE
+            if self.state == State.FIRST_LEFT_CORE:
+                self.state = State.SECOND_LEFT_CORE
 
         elif char == self.right_close_symbol:
             binding = self.stack[Stem.RIGHT].pop()
-            is_core = self.state == State.RIGHT_CORE
+            is_core = self.state == State.SECOND_RIGHT_CORE
             if is_core:
                 self.state = State.NONE
 
@@ -177,9 +198,10 @@ def get_core_stem_indices(dot_bracket: str):
 
     result = dot2pair.result
     right_core = result["right_core_stems"][0]
+    middle_core = result["middle_core_stems"][0]
     left_core = result["left_core_stems"][0]
 
-    return left_core[0], right_core[0], left_core[1], right_core[1]
+    return left_core[0], middle_core[0],right_core[0], left_core[1], middle_core[1],right_core[1]
 
 
 def get_correct_core_stems(truth: str, pred: str, slack: int = 0) -> int:
@@ -193,7 +215,8 @@ def get_correct_core_stems(truth: str, pred: str, slack: int = 0) -> int:
     except IndexError:
         return 0
 
-    left_ok = abs(tstems[0] - pstems[0]) + abs(tstems[2] - pstems[2]) <= slack
-    right_ok = abs(tstems[1] - pstems[1]) + abs(tstems[3] - pstems[3]) <= slack
+    left_ok = abs(tstems[0] - pstems[0]) + abs(tstems[3] - pstems[3]) <= slack
+    middle_ok = abs(tstems[1] - pstems[1]) + abs(tstems[4] - pstems[4]) <= slack
+    right_ok = abs(tstems[2] - pstems[2]) + abs(tstems[5] - pstems[5]) <=  slack
 
-    return left_ok + right_ok
+    return left_ok + middle_ok + right_ok
