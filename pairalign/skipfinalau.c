@@ -49,11 +49,11 @@ void skip_final_au(char *sequence, char *dot_bracket, int left_loop_stems,
   for (int i = 0; i < strlen(sequence); i++) {
     if (bracket[i] == '(' && L == -1) {
       L = i;
-    } else if (bracket[i] == '[' && R == -1) {
+    } else if (bracket[i] == '{' && R == -1) {
       R = i;
     } else if (bracket[i] == ')') {
       l = i;
-    } else if (bracket[i] == ']') {
+    } else if (bracket[i] == '}') {
       r = i;
     }
   }
@@ -71,8 +71,8 @@ void skip_final_au(char *sequence, char *dot_bracket, int left_loop_stems,
   if (right_is_au) {
     bracket[R] = bracket[r] = '.';
     cb(bracket, left_loop_stems, right_loop_stems - 1);
-    bracket[R] = '[';
-    bracket[r] = ']';
+    bracket[R] = '{';
+    bracket[r] = '}';
   }
   if (left_is_au && right_is_au) {
     bracket[L] = bracket[l] = bracket[R] = bracket[r] = '.';
