@@ -78,10 +78,10 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
   memset(dot_bracket, '.', len);
   dot_bracket[L] = '(';
   dot_bracket[l] = ')';
-  dot_bracket[M] = '{';
-  dot_bracket[m] = '}';
-  dot_bracket[R] = '[';
-  dot_bracket[r] = ']';
+  dot_bracket[M] = '[';
+  dot_bracket[m] = ']';
+  dot_bracket[R] = '{';
+  dot_bracket[r] = '}';
 
   // left loop stems
   left_loop_stems = 0;
@@ -99,8 +99,8 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
     if (!IS_PAIR(sequence[a], sequence[b])) {
       break;
     }
-    dot_bracket[a] = '{';
-    dot_bracket[b] = '}';
+    dot_bracket[a] = '[';
+    dot_bracket[b] = ']';
     middle_loop_stems++;
   }
 
@@ -110,8 +110,8 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
     if (!IS_PAIR(sequence[a], sequence[b])) {
       break;
     }
-    dot_bracket[a] = '[';
-    dot_bracket[b] = ']';
+    dot_bracket[a] = '{';
+    dot_bracket[b] = '}';
     right_loop_stems++;
   }
 
