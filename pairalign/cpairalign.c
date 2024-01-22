@@ -65,9 +65,9 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
 
   int L = i;
   int M = i + left_left_loop_size + 1;
-  int R = i +left_left_loop_size +left_right_loop_size +2;
-  int l = i + left_left_loop_size + left_right_loop_size + dd_size + 3;
-  int m= l +right_left_loop_size+1;
+  int R = i +left_left_loop_size +left_right_loop_size + dd_size +3;
+  int l = i + left_left_loop_size + left_right_loop_size + 2;
+  int m= l +right_left_loop_size  + dd_size +2;
   int r = i + j - 1;
 
   char *dot_bracket = strdup(sequence);
@@ -85,7 +85,8 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
 
   // left loop stems
   left_loop_stems = 0;
-  for (int a = L - 1, b = l + 1; a >= 0 && b <= m - 1; a--, b++) {
+  //for (int a = L - 1, b = l + 1; a >= 0 && b <= m - 1; a--, b++) {
+  for (int a = L - 1, b = l + 1; a >= 0 && b <= R - 1; a--, b++) {
     if (!IS_PAIR(sequence[a], sequence[b])) {
       break;
     }
@@ -106,7 +107,8 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
 
   // right loop stems
   right_loop_stems = 0;
-  for (int a = R - 1, b = r + 1; a >= M + 1 && b <= len - 1; a--, b++) {
+  //for (int a = R - 1, b = r + 1; a >= M + 1 && b <= len - 1; a--, b++) {
+  for (int a = R - 1, b = r + 1; a >= l + 1 && b <= len - 1; a--, b++) {
     if (!IS_PAIR(sequence[a], sequence[b])) {
       break;
     }

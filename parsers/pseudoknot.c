@@ -331,7 +331,7 @@ struct size *cartesianProduct(struct size *A, struct size *B) {
       sizes = append_size_if_not_exists(sizes, iterA->value + iterB->value);
     }
   }
-  // printf("result:"); dump(sizes);
+   //printf("result:"); dump(sizes);
   return sizes;
 }
 
@@ -470,8 +470,9 @@ void detect_pseudoknots(char *sequence,
         }
         cb(left, right - left + 1, i->left_left_loop_size,
            i->left_right_loop_size, i->right_left_loop_size, i->dd_size);
-        // fprintf(fp, "%d,%d,%d,%d\n", left, right - left + 1,
-        // i->left_loop_size, i->dd_size);
+         //printf( "%d,%d,%d,%d,%d,%d\n", i->left_left_loop_size,
+           //i->left_right_loop_size, i->dd_size,i->right_left_loop_size,left,right-left+1 ); //, left, right - left + 1
+      
       }
     }
 
