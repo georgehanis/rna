@@ -98,8 +98,8 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
   dot_bracket[r] = '}';
 
   left_loop_stems = 0;
-  for (int a = L - 1, b = l + 1; a >= 0 && b <= m - 1; a--, b++) {
-    if (!IS_PAIR(sequence[a], sequence[b])) {
+  for (int a = L - 1, b = l + 1; a >= 0 && b <= R - 1; a--, b++) {
+    if (!IS_PAIR(sequence[a], sequence[b])  || dot_bracket[b] != '.') {
       break;
     }
     dot_bracket[a] = '(';
@@ -119,8 +119,8 @@ void pairalign(char *sequence, int i, int j, int left_left_loop_size, int left_r
 
   // right loop stems
   right_loop_stems = 0;
-  for (int a = R - 1, b = r + 1; a >= M + 1 && b <= len - 1; a--, b++) {
-    if (!IS_PAIR(sequence[a], sequence[b])) {
+  for (int a = R - 1, b = r + 1; a >= l + 1 && b <= len - 1; a--, b++) {
+    if (!IS_PAIR(sequence[a], sequence[b]) || dot_bracket[a] != '.') {
       break;
     }
     dot_bracket[a] = '{';
